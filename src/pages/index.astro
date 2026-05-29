@@ -69,20 +69,8 @@ const typeEmoji: Record<string, string> = {
   <meta name="description" content="Découvrez nos activités au Japon : randonnées, gastronomie, culture, bien-être et plus encore." />
   <script is:inline defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body>
-
-  <!-- Header -->
-  <header class="site-header">
-    <div class="container">
-      <a href="/" class="logo">cocolo<span>.</span></a>
-      <span style="font-size:0.85rem; color:var(--color-gray);">Catalogue d'activités</span>
-    </div>
-  </header>
-
-  <!-- Main Alpine.js app -->
-  <main
-    class="container"
-    x-data={`{
+<body
+  x-data={`{
       activities: ${JSON.stringify(activities)},
       filters: { type: '', region: '', duration: '', difficulty: '', season: '' },
       sortBy: 'title',
@@ -134,8 +122,18 @@ const typeEmoji: Record<string, string> = {
       seasonLabel(s)   { return (${JSON.stringify(seasonLabels)})[s]     || s; },
       typeEmoji(t)     { return (${JSON.stringify(typeEmoji)})[t]        || '✨'; },
     }`}
-    @keydown.escape.window="closeModal()"
-  >
+  @keydown.escape.window="closeModal()"
+>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="logo">cocolo<span>.</span></a>
+      <span style="font-size:0.85rem; color:var(--color-gray);">Catalogue d'activités</span>
+    </div>
+  </header>
+
+  <main class="container">
 
     <!-- Hero -->
     <div class="hero">
@@ -280,7 +278,7 @@ const typeEmoji: Record<string, string> = {
 
   </main>
 
-  <!-- Modal overlay -->
+  <!-- Modal overlay (inside body x-data scope) -->
   <div
     class="modal-overlay"
     x-show="modal !== null"
