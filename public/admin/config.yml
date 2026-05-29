@@ -1,0 +1,75 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/images"
+public_folder: "/images"
+
+collections:
+  - name: "activities"
+    label: "Activités"
+    label_singular: "Activité"
+    folder: "src/content/activities"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Titre", name: "title", widget: "string" }
+
+      - label: "Type"
+        name: "type"
+        widget: "select"
+        options:
+          - { label: "🥾 Randonnée",     value: "hiking" }
+          - { label: "⛩️ Culture",        value: "cultural" }
+          - { label: "🍜 Gastronomie",   value: "food" }
+          - { label: "📷 Photographie",  value: "photography" }
+          - { label: "🧘 Bien-être",     value: "wellness" }
+          - { label: "🌊 Aventure",      value: "adventure" }
+
+      - label: "Région"
+        name: "region"
+        widget: "select"
+        options:
+          - { label: "Tokyo",            value: "tokyo" }
+          - { label: "Kyoto",            value: "kyoto" }
+          - { label: "Osaka",            value: "osaka" }
+          - { label: "Hakone",           value: "hakone" }
+          - { label: "Kōya-san",         value: "koyasan" }
+          - { label: "Campagne",         value: "rural" }
+          - { label: "Plusieurs régions",value: "multiple" }
+
+      - label: "Durée"
+        name: "duration"
+        widget: "select"
+        options:
+          - { label: "Demi-journée",      value: "half-day" }
+          - { label: "Journée complète",  value: "full-day" }
+          - { label: "Plusieurs jours",   value: "multi-day" }
+
+      - label: "Difficulté"
+        name: "difficulty"
+        widget: "select"
+        options:
+          - { label: "Facile",    value: "easy" }
+          - { label: "Modéré",   value: "moderate" }
+          - { label: "Difficile", value: "challenging" }
+
+      - label: "Saisons disponibles"
+        name: "seasons"
+        widget: "select"
+        multiple: true
+        options:
+          - { label: "Printemps", value: "spring" }
+          - { label: "Été",      value: "summer" }
+          - { label: "Automne",   value: "autumn" }
+          - { label: "Hiver",    value: "winter" }
+
+      - { label: "Prix (¥)", name: "price", widget: "number", value_type: "int" }
+
+      - { label: "Photo", name: "image", widget: "image", required: false, allow_multiple: false }
+
+      - { label: "Résumé (affiché sur la carte)", name: "summary", widget: "string" }
+
+      - { label: "Description complète", name: "body", widget: "markdown" }

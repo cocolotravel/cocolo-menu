@@ -1,0 +1,364 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import '../styles/global.css';
+
+const allActivities = await getCollection('activities');
+
+const activities = allActivities.map((a: CollectionEntry<'activities'>) => ({
+  slug: a.id,
+  ...a.data,
+  image: a.data.image ?? '',
+  body: a.body ?? '',
+}));
+
+const typeLabels: Record<string, string> = {
+  hiking: 'Randonnée',
+  cultural: 'Culture',
+  food: 'Gastronomie',
+  photography: 'Photographie',
+  wellness: 'Bien-être',
+  adventure: 'Aventure',
+};
+
+const regionLabels: Record<string, string> = {
+  tokyo: 'Tokyo',
+  kyoto: 'Kyoto',
+  osaka: 'Osaka',
+  hakone: 'Hakone',
+  koyasan: 'Kōya-san',
+  rural: 'Campagne',
+  multiple: 'Plusieurs régions',
+};
+
+const durationLabels: Record<string, string> = {
+  'half-day': 'Demi-journée',
+  'full-day': 'Journée complète',
+  'multi-day': 'Plusieurs jours',
+};
+
+const difficultyLabels: Record<string, string> = {
+  easy: 'Facile',
+  moderate: 'Modéré',
+  challenging: 'Difficile',
+};
+
+const seasonLabels: Record<string, string> = {
+  spring: 'Printemps',
+  summer: 'Été',
+  autumn: 'Automne',
+  winter: 'Hiver',
+};
+
+const typeEmoji: Record<string, string> = {
+  hiking: '🥾',
+  cultural: '⛩️',
+  food: '🍜',
+  photography: '📷',
+  wellness: '🧘',
+  adventure: '🌊',
+};
+---
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>Activités — Cocolo Travel</title>
+  <meta name="description" content="Découvrez nos activités au Japon : randonnées, gastronomie, culture, bien-être et plus encore." />
+  <script is:inline defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="logo">cocolo<span>.</span></a>
+      <span style="font-size:0.85rem; color:var(--color-gray);">Catalogue d'activités</span>
+    </div>
+  </header>
+
+  <!-- Main Alpine.js app -->
+  <main
+    class="container"
+    x-data={`{
+      activities: ${JSON.stringify(activities)},
+      filters: { type: '', region: '', duration: '', difficulty: '', season: '' },
+      sortBy: 'title',
+      modal: null,
+
+      get filtered() {
+        return this.activities
+          .filter(a => {
+            if (this.filters.type       && a.type       !== this.filters.type)       return false;
+            if (this.filters.region     && a.region     !== this.filters.region)     return false;
+            if (this.filters.duration   && a.duration   !== this.filters.duration)   return false;
+            if (this.filters.difficulty && a.difficulty !== this.filters.difficulty) return false;
+            if (this.filters.season     && !a.seasons.includes(this.filters.season)) return false;
+            return true;
+          })
+          .sort((a, b) => {
+            if (this.sortBy === 'price-asc')  return a.price - b.price;
+            if (this.sortBy === 'price-desc') return b.price - a.price;
+            if (this.sortBy === 'duration') {
+              const order = { 'half-day': 0, 'full-day': 1, 'multi-day': 2 };
+              return order[a.duration] - order[b.duration];
+            }
+            return a.title.localeCompare(b.title, 'fr');
+          });
+      },
+
+      resetFilters() {
+        this.filters = { type: '', region: '', duration: '', difficulty: '', season: '' };
+      },
+
+      openModal(activity) {
+        this.modal = activity;
+        document.body.style.overflow = 'hidden';
+      },
+
+      closeModal() {
+        this.modal = null;
+        document.body.style.overflow = '';
+      },
+
+      formatPrice(p) {
+        return p.toLocaleString('fr-FR');
+      },
+
+      typeLabel(t)     { return (${JSON.stringify(typeLabels)})[t]       || t; },
+      regionLabel(r)   { return (${JSON.stringify(regionLabels)})[r]     || r; },
+      durationLabel(d) { return (${JSON.stringify(durationLabels)})[d]   || d; },
+      diffLabel(d)     { return (${JSON.stringify(difficultyLabels)})[d] || d; },
+      seasonLabel(s)   { return (${JSON.stringify(seasonLabels)})[s]     || s; },
+      typeEmoji(t)     { return (${JSON.stringify(typeEmoji)})[t]        || '✨'; },
+    }`}
+    @keydown.escape.window="closeModal()"
+  >
+
+    <!-- Hero -->
+    <div class="hero">
+      <h1>Nos activités au <em>Japon</em></h1>
+      <p>Expériences authentiques, guides passionnés, souvenirs inoubliables.</p>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Type d'activité</label>
+        <select x-model="filters.type">
+          <option value="">Tous les types</option>
+          <option value="hiking">🥾 Randonnée</option>
+          <option value="cultural">⛩️ Culture</option>
+          <option value="food">🍜 Gastronomie</option>
+          <option value="photography">📷 Photographie</option>
+          <option value="wellness">🧘 Bien-être</option>
+          <option value="adventure">🌊 Aventure</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Région</label>
+        <select x-model="filters.region">
+          <option value="">Toutes les régions</option>
+          <option value="tokyo">Tokyo</option>
+          <option value="kyoto">Kyoto</option>
+          <option value="osaka">Osaka</option>
+          <option value="hakone">Hakone</option>
+          <option value="koyasan">Kōya-san</option>
+          <option value="rural">Campagne</option>
+          <option value="multiple">Plusieurs régions</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Durée</label>
+        <select x-model="filters.duration">
+          <option value="">Toutes les durées</option>
+          <option value="half-day">Demi-journée</option>
+          <option value="full-day">Journée complète</option>
+          <option value="multi-day">Plusieurs jours</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Difficulté</label>
+        <select x-model="filters.difficulty">
+          <option value="">Tous niveaux</option>
+          <option value="easy">Facile</option>
+          <option value="moderate">Modéré</option>
+          <option value="challenging">Difficile</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Saison</label>
+        <select x-model="filters.season">
+          <option value="">Toutes saisons</option>
+          <option value="spring">Printemps</option>
+          <option value="summer">Été</option>
+          <option value="autumn">Automne</option>
+          <option value="winter">Hiver</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn-reset" @click="resetFilters()">Réinitialiser</button>
+      </div>
+    </div>
+
+    <!-- Results & sort bar -->
+    <div class="results-bar">
+      <p class="results-count">
+        <strong x-text="filtered.length"></strong>
+        <span x-text="filtered.length === 1 ? ' activité trouvée' : ' activités trouvées'"></span>
+      </p>
+      <div class="sort-group">
+        <label>Trier par</label>
+        <select x-model="sortBy">
+          <option value="title">Nom A → Z</option>
+          <option value="price-asc">Prix croissant</option>
+          <option value="price-desc">Prix décroissant</option>
+          <option value="duration">Durée</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Activity grid -->
+    <div class="activity-grid">
+      <template x-if="filtered.length === 0">
+        <div class="no-results">
+          <p>🔍</p>
+          <p>Aucune activité ne correspond à vos filtres.</p>
+        </div>
+      </template>
+
+      <template x-for="activity in filtered" :key="activity.slug">
+        <article
+          class="activity-card"
+          @click="openModal(activity)"
+          role="button"
+          tabindex="0"
+          @keydown.enter="openModal(activity)"
+        >
+          <template x-if="activity.image">
+            <img class="card-image" :src="activity.image" :alt="activity.title" loading="lazy" />
+          </template>
+          <template x-if="!activity.image">
+            <div class="card-image-placeholder">
+              <span x-text="typeEmoji(activity.type)"></span>
+            </div>
+          </template>
+
+          <div class="card-body">
+            <div class="card-tags">
+              <span class="tag type"   x-text="typeLabel(activity.type)"></span>
+              <span class="tag region" x-text="regionLabel(activity.region)"></span>
+              <template x-for="s in activity.seasons.slice(0,2)" :key="s">
+                <span class="tag season" x-text="seasonLabel(s)"></span>
+              </template>
+            </div>
+
+            <h2 class="card-title"   x-text="activity.title"></h2>
+            <p  class="card-summary" x-text="activity.summary"></p>
+
+            <div class="card-footer">
+              <div class="card-meta">
+                <span x-text="durationLabel(activity.duration)"></span>
+                <span x-text="diffLabel(activity.difficulty)"></span>
+              </div>
+              <div class="card-price">
+                <span x-text="formatPrice(activity.price)"></span>
+                <span class="currency">¥</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </template>
+    </div>
+
+  </main>
+
+  <!-- Modal overlay -->
+  <div
+    class="modal-overlay"
+    x-show="modal !== null"
+    x-transition.opacity
+    @click.self="closeModal()"
+    style="display:none"
+  >
+    <div
+      class="modal"
+      x-show="modal !== null"
+      x-transition
+      role="dialog"
+      aria-modal="true"
+      :aria-label="modal?.title"
+    >
+      <template x-if="modal">
+        <div>
+          <template x-if="modal.image">
+            <img class="modal-image" :src="modal.image" :alt="modal.title" />
+          </template>
+          <template x-if="!modal.image">
+            <div class="modal-image-placeholder">
+              <span x-text="typeEmoji(modal.type)"></span>
+            </div>
+          </template>
+
+          <div class="modal-body">
+            <div class="modal-header">
+              <h2 class="modal-title" x-text="modal.title"></h2>
+              <button class="modal-close" @click="closeModal()" aria-label="Fermer">✕</button>
+            </div>
+
+            <div class="modal-tags">
+              <span class="tag type"   x-text="typeLabel(modal.type)"></span>
+              <span class="tag region" x-text="regionLabel(modal.region)"></span>
+              <template x-for="s in modal.seasons" :key="s">
+                <span class="tag season" x-text="seasonLabel(s)"></span>
+              </template>
+            </div>
+
+            <div class="modal-specs">
+              <div class="modal-spec">
+                <span class="spec-label">Durée</span>
+                <span class="spec-value" x-text="durationLabel(modal.duration)"></span>
+              </div>
+              <div class="modal-spec">
+                <span class="spec-label">Difficulté</span>
+                <span class="spec-value" x-text="diffLabel(modal.difficulty)"></span>
+              </div>
+              <div class="modal-spec">
+                <span class="spec-label">Région</span>
+                <span class="spec-value" x-text="regionLabel(modal.region)"></span>
+              </div>
+            </div>
+
+            <div class="modal-price-row">
+              <span class="modal-price-label">Prix par personne</span>
+              <span class="modal-price-value">
+                <span x-text="formatPrice(modal.price)"></span>
+                <span class="currency"> ¥</span>
+              </span>
+            </div>
+
+            <div class="modal-description">
+              <template x-for="para in modal.body.trim().split('\n\n')" :key="para">
+                <p x-text="para.trim()" x-show="para.trim().length > 0"></p>
+              </template>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>© 2025 Cocolo Travel — Tous droits réservés</p>
+  </footer>
+
+</body>
+</html>
