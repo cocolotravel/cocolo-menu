@@ -1,14 +1,21 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import '../styles/global.css';
 
 const allActivities = await getCollection('activities');
 
-const activities = allActivities.map((a: CollectionEntry<'activities'>) => ({
-  slug: a.id,
-  ...a.data,
-  image: a.data.image ?? '',
-  body: a.body ?? '',
+// Render markdown bodies at build time
+const rendered = await Promise.all(
+  allActivities.map(async (a: CollectionEntry<'activities'>) => {
+    const { Content } = await render(a);
+    return { entry: a, Content };
+  })
+);
+
+const activities = rendered.map(({ entry }) => ({
+  slug: entry.id,
+  ...entry.data,
+  image: entry.data.image ?? '',
 }));
 
 const typeLabels: Record<string, string> = {
@@ -18,6 +25,7 @@ const typeLabels: Record<string, string> = {
   photography: 'Photographie',
   wellness: 'Bien-être',
   adventure: 'Aventure',
+  service: 'Service',
 };
 
 const regionLabels: Record<string, string> = {
@@ -26,6 +34,7 @@ const regionLabels: Record<string, string> = {
   osaka: 'Osaka',
   hakone: 'Hakone',
   koyasan: 'Kōya-san',
+  nagoya: 'Nagoya',
   rural: 'Campagne',
   multiple: 'Plusieurs régions',
 };
@@ -56,6 +65,7 @@ const typeEmoji: Record<string, string> = {
   photography: '📷',
   wellness: '🧘',
   adventure: '🌊',
+  service: '🤝',
 };
 ---
 
@@ -75,6 +85,7 @@ const typeEmoji: Record<string, string> = {
       filters: { type: '', region: '', duration: '', difficulty: '', season: '' },
       sortBy: 'title',
       modal: null,
+      modalBodyHtml: '',
 
       get filtered() {
         return this.activities
@@ -103,16 +114,19 @@ const typeEmoji: Record<string, string> = {
 
       openModal(activity) {
         this.modal = activity;
+        const el = document.getElementById('body-' + activity.slug);
+        this.modalBodyHtml = el ? el.innerHTML : '';
         document.body.style.overflow = 'hidden';
       },
 
       closeModal() {
         this.modal = null;
+        this.modalBodyHtml = '';
         document.body.style.overflow = '';
       },
 
       formatPrice(p) {
-        return p.toLocaleString('fr-FR');
+        return p ? p.toLocaleString('fr-FR') : '—';
       },
 
       typeLabel(t)     { return (${JSON.stringify(typeLabels)})[t]       || t; },
@@ -124,6 +138,15 @@ const typeEmoji: Record<string, string> = {
     }`}
   @keydown.escape.window="closeModal()"
 >
+
+  <!-- Hidden rendered activity bodies (read by modal at open time) -->
+  <div style="display:none" aria-hidden="true">
+    {rendered.map(({ entry, Content }) => (
+      <div id={`body-${entry.id}`}>
+        <Content />
+      </div>
+    ))}
+  </div>
 
   <!-- Header -->
   <header class="site-header">
@@ -153,6 +176,7 @@ const typeEmoji: Record<string, string> = {
           <option value="photography">📷 Photographie</option>
           <option value="wellness">🧘 Bien-être</option>
           <option value="adventure">🌊 Aventure</option>
+          <option value="service">🤝 Service</option>
         </select>
       </div>
 
@@ -165,6 +189,7 @@ const typeEmoji: Record<string, string> = {
           <option value="osaka">Osaka</option>
           <option value="hakone">Hakone</option>
           <option value="koyasan">Kōya-san</option>
+          <option value="nagoya">Nagoya</option>
           <option value="rural">Campagne</option>
           <option value="multiple">Plusieurs régions</option>
         </select>
@@ -266,7 +291,7 @@ const typeEmoji: Record<string, string> = {
                 <span x-text="durationLabel(activity.duration)"></span>
                 <span x-text="diffLabel(activity.difficulty)"></span>
               </div>
-              <div class="card-price">
+              <div class="card-price" x-show="activity.price">
                 <span x-text="formatPrice(activity.price)"></span>
                 <span class="currency">¥</span>
               </div>
@@ -334,19 +359,17 @@ const typeEmoji: Record<string, string> = {
               </div>
             </div>
 
-            <div class="modal-price-row">
-              <span class="modal-price-label">Prix par personne</span>
-              <span class="modal-price-value">
-                <span x-text="formatPrice(modal.price)"></span>
-                <span class="currency"> ¥</span>
-              </span>
-            </div>
+            <template x-if="modal.price">
+              <div class="modal-price-row">
+                <span class="modal-price-label">Prix par personne</span>
+                <span class="modal-price-value">
+                  <span x-text="formatPrice(modal.price)"></span>
+                  <span class="currency"> ¥</span>
+                </span>
+              </div>
+            </template>
 
-            <div class="modal-description">
-              <template x-for="para in modal.body.trim().split('\n\n')" :key="para">
-                <p x-text="para.trim()" x-show="para.trim().length > 0"></p>
-              </template>
-            </div>
+            <div class="modal-description" x-html="modalBodyHtml"></div>
           </div>
         </div>
       </template>

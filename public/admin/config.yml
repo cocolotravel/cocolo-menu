@@ -27,6 +27,7 @@ collections:
           - { label: "📷 Photographie",  value: "photography" }
           - { label: "🧘 Bien-être",     value: "wellness" }
           - { label: "🌊 Aventure",      value: "adventure" }
+          - { label: "🤝 Service",       value: "service" }
 
       - label: "Région"
         name: "region"
@@ -37,6 +38,7 @@ collections:
           - { label: "Osaka",            value: "osaka" }
           - { label: "Hakone",           value: "hakone" }
           - { label: "Kōya-san",         value: "koyasan" }
+          - { label: "Nagoya",           value: "nagoya" }
           - { label: "Campagne",         value: "rural" }
           - { label: "Plusieurs régions",value: "multiple" }
 
@@ -66,7 +68,7 @@ collections:
           - { label: "Automne",   value: "autumn" }
           - { label: "Hiver",    value: "winter" }
 
-      - { label: "Prix (¥)", name: "price", widget: "number", value_type: "int" }
+      - { label: "Prix (¥)", name: "price", widget: "number", value_type: "int", required: false }
 
       - { label: "Photo", name: "image", widget: "image", required: false, allow_multiple: false }
 

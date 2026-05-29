@@ -4,7 +4,10 @@
       "Bash(npm install:*)",
       "Bash(npx astro check:*)",
       "Bash(npm i:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Read(//c/Users/Axel/Desktop/menu/**)",
+      "Read(//c/Users/Axel/Desktop/menu/src/content/activities/**)",
+      "Bash(npm run build:*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Axel\\Desktop\\menu\\src\\content"
