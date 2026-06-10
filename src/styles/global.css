@@ -1,76 +1,6 @@
-/* ── Roslindale Display (headings) ──────────────────────── */
-@font-face {
-  font-family: 'RoslindaleDisplay';
-  src: url('/fonts/RoslindaleDisplay-Regular.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'RoslindaleDisplay';
-  src: url('/fonts/RoslindaleDisplay-Italic.otf') format('opentype');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'RoslindaleDisplay';
-  src: url('/fonts/RoslindaleDisplay-Medium.otf') format('opentype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'RoslindaleDisplay';
-  src: url('/fonts/RoslindaleDisplay-SemiBold.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'RoslindaleDisplay';
-  src: url('/fonts/RoslindaleDisplay-Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'RoslindaleDisplay';
-  src: url('/fonts/RoslindaleDisplay-BoldItalic.otf') format('opentype');
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-/* ── Roslindale Text (body) ─────────────────────────────── */
-@font-face {
-  font-family: 'RoslindaleText';
-  src: url('/fonts/RoslindaleText-Regular.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'RoslindaleText';
-  src: url('/fonts/RoslindaleText-Italic.otf') format('opentype');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'RoslindaleText';
-  src: url('/fonts/RoslindaleText-Medium.otf') format('opentype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'RoslindaleText';
-  src: url('/fonts/RoslindaleText-SemiBold.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
+/* ── Fonts — loaded from Cocolo CDN ─────────────────────── */
+@import url('https://assets.cocolotravel.com/fonts/fonts.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
 
 /* ── Design tokens ─────────────────────────────────────── */
 :root {
@@ -82,8 +12,8 @@
   --color-surface:   #FFFFFF;
   --color-border:    #E8E7DC;
 
-  --font-heading: 'RoslindaleDisplay', Georgia, serif;
-  --font-body:    'RoslindaleText', Georgia, serif;
+  --font-heading: 'Roslindale Variable', Georgia, serif;
+  --font-body:    'Inter', sans-serif;
 
   --radius: 12px;
   --shadow: 0 2px 12px rgba(27, 56, 72, 0.08);
